@@ -1304,12 +1304,14 @@ func (parser *Parser) ParseDefinition(typeSpecDef *TypeSpecDef) (*Schema, error)
 		var varnames []string
 		var enumComments = make(map[string]string)
 		var enumDescriptions = make([]string, 0, len(typeSpecDef.Enums))
+		var enumApifoxs = make([]map[string]interface{}, 0, len(typeSpecDef.Enums))
 		for _, value := range typeSpecDef.Enums {
 			definition.Enum = append(definition.Enum, value.Value)
 			varnames = append(varnames, value.key)
 			if len(value.Comment) > 0 {
 				enumComments[value.key] = value.Comment
 				enumDescriptions = append(enumDescriptions, value.Comment)
+				enumApifoxs = append(enumApifoxs, map[string]interface{}{"value": value.Value, "name": value.key, "description": value.Comment})
 			}
 		}
 		if definition.Extensions == nil {
@@ -1317,6 +1319,7 @@ func (parser *Parser) ParseDefinition(typeSpecDef *TypeSpecDef) (*Schema, error)
 		}
 		definition.Extensions[enumVarNamesExtension] = varnames
 		definition.Extensions[enumDescriptionsExtension] = enumDescriptions
+		definition.Extensions[enumApifoxExtension] = enumApifoxs
 		if len(enumComments) > 0 {
 			definition.Extensions[enumCommentsExtension] = enumComments
 		}
